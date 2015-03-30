@@ -1,4 +1,4 @@
-package com.hikimori911.mylastfmclient;
+package com.hikimori911.mylastfmclient.appinterface;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -11,6 +11,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.hikimori911.mylastfmclient.R;
 import com.hikimori911.mylastfmclient.data.pojo.AppPreferenceHelper;
 import com.hikimori911.mylastfmclient.data.pojo.GetSessionObject;
 import com.hikimori911.mylastfmclient.data.pojo.Session;

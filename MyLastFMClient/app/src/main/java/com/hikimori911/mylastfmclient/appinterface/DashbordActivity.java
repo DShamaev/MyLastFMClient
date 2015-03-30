@@ -1,4 +1,4 @@
-package com.hikimori911.mylastfmclient;
+package com.hikimori911.mylastfmclient.appinterface;
 
 import android.app.ActionBar;
 import android.app.Activity;
@@ -11,6 +11,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+
+import com.hikimori911.mylastfmclient.R;
 
 
 public class DashbordActivity extends Activity
