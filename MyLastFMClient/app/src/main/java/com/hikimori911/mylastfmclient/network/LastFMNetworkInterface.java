@@ -5,7 +5,9 @@ import com.hikimori911.mylastfmclient.data.pojo.GetSessionObject;
 import retrofit.Callback;
 import retrofit.http.Field;
 import retrofit.http.FormUrlEncoded;
+import retrofit.http.GET;
 import retrofit.http.POST;
+import retrofit.http.Query;
 
 /**
  * Created by Дмитрий on 28.03.2015.
@@ -22,4 +24,16 @@ public interface LastFMNetworkInterface {
                       @Field("password") String password,
                       @Field("username") String username,
                       Callback<GetSessionObject> callback);
+
+    @GET("/?api_key=01deff8d92c306d597800c24952e8a57&method=user.getevents&format=json")
+    void getUserEvents(@Query("user") String userName,
+                       @Query("limit") int limit,
+                       @Query("api_key") String api_key,
+                      Callback<GetSessionObject> callback);
+
+    @GET("/?api_key=01deff8d92c306d597800c24952e8a57&method=user.getrecenttracks&format=json")
+    void getUserRecentTracks(@Query("user") String userName,
+                       @Query("limit") int limit,
+                       @Query("api_key") String api_key,
+                       Callback<GetSessionObject> callback);
 }

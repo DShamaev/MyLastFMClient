@@ -57,9 +57,6 @@ dependencies {
 
     compile "com.telly:groundy:${groundyVersion}"
 
-    //plugin annotations
-    //compile "com.hamsterksu.testplugin:test-plugin-api:${asPluginVersion}"
-
     compile "com.github.hamsterksu:projection-plugin-api:${asProjectionPluginVersion}"
 
     compile 'com.squareup.retrofit:retrofit:1.9.0'
@@ -79,25 +76,9 @@ aptlibs {
                 plugin = "com.hamsterksu.asql.projections.ProjectionPlugin"
             }
         }
-        /*plugins {
-            cursorWrapperPlugin{
-                version = '1.0.9'
-                dependencies = ["com.hamsterksu.testplugin:test-plugin-api:${version}", "com.hamsterksu.testplugin:test-plugin-processor:${version}"]
-                plugin = "com.hamsterksu.testplugin.CursorWrapperPlugin"
-            }
-        }*/
     }
 
     groundy {
         version "${groundyVersion}"
     }
-
-    /*androidAnnotations{
-        version "${aaVersion}"
-        customArgs { variant ->
-            arg "-AandroidManifestFile", "${variant.processResources.manifestFile}"
-            arg "-AresourcePackageName", "hamsterksu.demo"
-            arg "-AlogAppenderConsole", "true"
-        }
-    }*/
 }
