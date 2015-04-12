@@ -12,7 +12,7 @@ public class LastFMAuthenticator extends AbstractAccountAuthenticator {
 
     private String TAG = "LastFMAuthenticator";
 
-    public static final String ACCOUNT_NAME = "My LastFM Client";
+    public static final String ACCOUNT_NAME = "LastFM";
     public static final String ACCOUNT_TYPE = "mylastfmclient.hikimori911.com";
     public static final String AUTHTOKEN_TYPE_FULL_ACCESS = "Full access";
 

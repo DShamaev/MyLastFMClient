@@ -26,7 +26,7 @@ import retrofit.client.Response;
 public class LastFMSyncAdapter extends AbstractThreadedSyncAdapter {
     public final String LOG_TAG = LastFMSyncAdapter.class.getSimpleName();
 
-    public static final int SYNC_INTERVAL = 60 * 180;
+    public static final int SYNC_INTERVAL = 60;
     public static final int SYNC_FLEXTIME = SYNC_INTERVAL/3;
 
     protected static Account mAccount;
@@ -82,11 +82,15 @@ public class LastFMSyncAdapter extends AbstractThreadedSyncAdapter {
      * @param context The context used to access the account service
      */
     public static void syncImmediately(Context context) {
-        Bundle bundle = new Bundle();
-        bundle.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
-        bundle.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
-        ContentResolver.requestSync(getSyncAccount(context),
-                context.getString(R.string.content_authority), bundle);
+        Account account = getSyncAccount(context);
+        String authority = context.getString(R.string.content_authority);
+        if (!ContentResolver.isSyncPending(account, authority)  &&
+                !ContentResolver.isSyncActive(account, authority)) {
+            Bundle bundle = new Bundle();
+            bundle.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
+            bundle.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
+            ContentResolver.requestSync(account,authority, bundle);
+        }
     }
 
     /**
@@ -128,7 +132,9 @@ public class LastFMSyncAdapter extends AbstractThreadedSyncAdapter {
                     if (accounts[i].name != null && accounts[i].name.equals(userName)) {
                         mAccount = accounts[i];
                         LastFMSyncAdapter.configurePeriodicSync(context, SYNC_INTERVAL, SYNC_FLEXTIME);
-                        ContentResolver.setSyncAutomatically(accounts[i], context.getString(R.string.content_authority), true);
+                        String authority = context.getString(R.string.content_authority);
+                        ContentResolver.setIsSyncable(accounts[i], authority, 1);
+                        ContentResolver.setSyncAutomatically(accounts[i],authority , true);
                         syncImmediately(context);
                         break;
                     }

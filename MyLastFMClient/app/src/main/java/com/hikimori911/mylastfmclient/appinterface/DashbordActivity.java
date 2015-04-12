@@ -43,7 +43,7 @@ public class DashbordActivity extends Activity
                 R.id.navigation_drawer,
                 (DrawerLayout) findViewById(R.id.drawer_layout));
 
-        LastFMSyncAdapter.initializeSyncAdapter(this);
+        LastFMSyncAdapter.initializeSyncAdapter(getApplicationContext());
     }
 
     @Override

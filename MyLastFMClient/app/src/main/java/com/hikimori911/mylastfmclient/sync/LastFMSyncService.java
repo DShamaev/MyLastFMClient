@@ -11,7 +11,7 @@ public class LastFMSyncService extends Service {
 
     @Override
     public void onCreate() {
-        Log.d("SunshineSyncService", "onCreate - SunshineSyncService");
+        Log.d("SunshineSyncService", "onCreate - SyncService");
         synchronized (sSyncAdapterLock) {
             if (sSunshineSyncAdapter == null) {
                 sSunshineSyncAdapter = new LastFMSyncAdapter(getApplicationContext(), true);
