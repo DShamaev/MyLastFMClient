@@ -1,6 +1,9 @@
 package com.hikimori911.mylastfmclient.appinterface;
 
-import android.app.Activity;
+import android.accounts.Account;
+import android.accounts.AccountAuthenticatorActivity;
+import android.accounts.AccountManager;
+import android.accounts.AccountManagerFuture;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
@@ -12,10 +15,11 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.hikimori911.mylastfmclient.R;
-import com.hikimori911.mylastfmclient.data.pojo.AppPreferenceHelper;
+import com.hikimori911.mylastfmclient.data.AppPreferenceHelper;
+import com.hikimori911.mylastfmclient.data.pojo.LFMSession;
 import com.hikimori911.mylastfmclient.data.pojo.GetSessionObject;
-import com.hikimori911.mylastfmclient.data.pojo.Session;
 import com.hikimori911.mylastfmclient.network.RestClient;
+import com.hikimori911.mylastfmclient.sync.LastFMAuthenticator;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -25,7 +29,9 @@ import retrofit.RetrofitError;
 import retrofit.client.Response;
 
 
-public class StartActivity extends Activity{
+public class StartActivity extends AccountAuthenticatorActivity {
+
+    private String TAG = this.getClass().getSimpleName();
 
     public static final String USERNAME_KEY = "USERNAME_KEY";
     public static final String PASSWORD_KEY = "PASSWORD_KEY";
@@ -36,18 +42,36 @@ public class StartActivity extends Activity{
 
     protected ProgressDialog dialog;
 
+    private AccountManager mAccountManager;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start);
 
-        if(AppPreferenceHelper.getAuthToken(this)!=null &&
-                AppPreferenceHelper.getUserName(this)!=null ){
-            Intent intent = new Intent(StartActivity.this,DashbordActivity.class);
-            startActivity(intent);
-            finish();
+        mAccountManager = AccountManager.get(this);
+        Account[] accounts = mAccountManager.getAccountsByType(LastFMAuthenticator.ACCOUNT_TYPE);
+        String userName = AppPreferenceHelper.getUserName(getApplicationContext());
+        if(accounts.length>0 && userName!= null){
+            AccountManagerFuture<Bundle> future = null;
+            for(int i=0;i<accounts.length;i++){
+                if(accounts[i].name!=null && accounts[i].name.equals(userName)){
+                    try {
+                        future = mAccountManager.getAuthToken(accounts[i],
+                                LastFMAuthenticator.AUTHTOKEN_TYPE_FULL_ACCESS, null, this, null, null);
+                        Bundle bnd = future.getResult();
+                        final String authtoken = bnd.getString(AccountManager.KEY_AUTHTOKEN);
+                        if(authtoken!=null && !authtoken.isEmpty()) {
+                            Intent intent = new Intent(StartActivity.this, DashbordActivity.class);
+                            startActivity(intent);
+                            finish();
+                        }
+                    } catch (Exception e) {
+                    }
+                    break;
+                }
+            }
         }
-
 
         mUserNameET = (EditText)findViewById(R.id.username);
         mPasswordET = (EditText)findViewById(R.id.password);
@@ -56,8 +80,8 @@ public class StartActivity extends Activity{
         mLoginBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String password = mPasswordET.getText().toString();
-                String userName = mUserNameET.getText().toString();
+                final String password = mPasswordET.getText().toString();
+                final String userName = mUserNameET.getText().toString();
                 if(userName.isEmpty() || password.isEmpty()){
                     Toast.makeText(StartActivity.this, getResources().getString(R.string.start_login_empty_fields_error), Toast.LENGTH_SHORT).show();
                     return;
@@ -81,21 +105,27 @@ public class StartActivity extends Activity{
                             public void failure(final RetrofitError error) {
                                 android.util.Log.i("example", "Error, body: " + error.getBody().toString());
                                 dialog.dismiss();
-                                Toast.makeText(StartActivity.this,error.getBody().toString(),Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getApplicationContext(),error.getBody().toString(),Toast.LENGTH_SHORT).show();
                             }
 
                             @Override
                             public void success(GetSessionObject data, Response response) {
                                 dialog.dismiss();
                                 if(data.error==0) {
-                                    Session session = (Session) data.session;
-                                    AppPreferenceHelper.saveAuthToken(StartActivity.this,session.key);
-                                    AppPreferenceHelper.saveUserName(StartActivity.this,session.name);
-                                    Intent intent = new Intent(StartActivity.this,DashbordActivity.class);
-                                    startActivity(intent);
-                                    finish();
+                                    LFMSession LFMSession = (LFMSession) data.LFMSession;
+
+                                    if(LFMSession !=null) {
+                                        AppPreferenceHelper.saveUserName(getApplicationContext(), LFMSession.name);
+                                        final Account account = new Account(LFMSession.name, LastFMAuthenticator.ACCOUNT_TYPE);
+                                        mAccountManager.addAccountExplicitly(account, password, null);
+                                        mAccountManager.setAuthToken(account, LastFMAuthenticator.AUTHTOKEN_TYPE_FULL_ACCESS, LFMSession.key);
+
+                                        Intent intent = new Intent(StartActivity.this, DashbordActivity.class);
+                                        startActivity(intent);
+                                        finish();
+                                    }
                                 }else{
-                                    Toast.makeText(StartActivity.this,data.message,Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(getApplicationContext(),data.message,Toast.LENGTH_SHORT).show();
                                 }
                             }
                         }

@@ -39,7 +39,7 @@ configurations {
     apt
 }
 
-ext.asVersion = '1.10.2'
+ext.asVersion = '1.10.+'
 ext.asPluginVersion = '1.0.9'
 ext.asProjectionPluginVersion = '1.0.+'
 ext.groundyVersion = '1.5'

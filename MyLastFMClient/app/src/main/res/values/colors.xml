@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="lfm_white">#FFFFFF</color>
+    <color name="lfm_red">#C91B4A</color>
+    <color name="lfm_marble">#91998E</color>
+    <color name="lfm_stop">#0A0503</color>
+    <color name="lfm_trans">#DBE0CF</color>
+</resources>

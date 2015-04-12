@@ -1,4 +1,4 @@
-package com.hikimori911.mylastfmclient.store;
+package com.hikimori911.mylastfmclient.data.store;
 
 /**
  * Created by hikimori911 on 31.03.2015.
@@ -28,7 +28,7 @@ public interface UserDataStore {
         @Autoincrement
         @Column(type = Type.INTEGER)
         //@CursorType(int.class)
-        String ID = "_id";
+                String ID = "_id";
 
         @Projection
         String PROJECTION_ALL = "All";
@@ -49,9 +49,57 @@ public interface UserDataStore {
         @Column(type = Type.TEXT)
         String EVENT_DESCRIPTION = "eventDescription";
 
+        @Column(type = Type.TEXT)
+        String EVENT_ARTISTS = "eventArtists";
+
+        @Column(type = Type.INTEGER)
+        String EVENT_LOCATION = "eventLocation";
+
+        @Column(type = Type.INTEGER)
+        String EVENT_ATTENDANCE = "eventAttendance";
+
+        @Column(type = Type.TEXT)
+        String EVENT_IMG_URL = "eventImageUrl";
+
         //notify our view about changes in the table
         @URI(altNotify = EventsView.CONTENT_URI)
         String CONTENT_URI = "events";
+    }
+
+    @Table(LocationTable.TABLE_NAME)
+    public static interface LocationTable extends BaseTable {
+
+        String TABLE_NAME = "locations";
+
+        @Column(type = Type.INTEGER)
+        String LOCATION_ID = "locationId";
+
+        @Column(type = Type.TEXT)
+        String LOCATION_NAME = "locationName";
+
+        @Column(type = Type.TEXT)
+        String LOCATION_URL = "locationUrl";
+    }
+
+    @Table(TrackTable.TABLE_NAME)
+    public static interface TrackTable extends BaseTable {
+
+        String TABLE_NAME = "tracks";
+
+        @Column(type = Type.TEXT)
+        String TRACK_NAME = "trackName";
+
+        @Column(type = Type.TEXT)
+        String TRACK_ARTIST = "trackArtist";
+
+        @Column(type = Type.TEXT)
+        String TRACK_URL = "trackUrl";
+
+        @Column(type = Type.INTEGER)
+        String TRACK_DATE = "trackDate";
+
+        @Column(type = Type.INTEGER)
+        String TRACK_NOW_PLAYING = "nowPlaying";
     }
 
     /**
@@ -69,9 +117,6 @@ public interface UserDataStore {
 
         @From(EventsTable.TABLE_NAME)
         String TABLE_POST = "post_table";
-
-        @Projection
-        String PROJECTION_ALL = "All";
     }
 
 }

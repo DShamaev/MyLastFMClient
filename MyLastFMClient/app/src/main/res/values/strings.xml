@@ -23,4 +23,8 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
     <string name="action_example">Example action</string>
+
+    <string name="sync_account_type">mylastfmclient.hikimori911.com</string>
+    <string name="content_authority">com.hikimori911.mylastfmclient.AUTHORITY</string>
+
 </resources>

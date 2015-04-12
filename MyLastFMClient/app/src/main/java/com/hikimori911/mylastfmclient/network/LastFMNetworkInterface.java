@@ -25,15 +25,20 @@ public interface LastFMNetworkInterface {
                       @Field("username") String username,
                       Callback<GetSessionObject> callback);
 
-    @GET("/?api_key=01deff8d92c306d597800c24952e8a57&method=user.getevents&format=json")
+    @GET("/?method=user.getevents&format=json")
     void getUserEvents(@Query("user") String userName,
                        @Query("limit") int limit,
                        @Query("api_key") String api_key,
                       Callback<GetSessionObject> callback);
 
-    @GET("/?api_key=01deff8d92c306d597800c24952e8a57&method=user.getrecenttracks&format=json")
+    @GET("/?method=user.getrecenttracks&format=json")
     void getUserRecentTracks(@Query("user") String userName,
                        @Query("limit") int limit,
                        @Query("api_key") String api_key,
                        Callback<GetSessionObject> callback);
+
+    @GET("/?method=event.getInfo&format=json")
+    void getUserRecentTracks(@Query("event") int eventId,
+                             @Query("api_key") String api_key,
+                             Callback<GetSessionObject> callback);
 }

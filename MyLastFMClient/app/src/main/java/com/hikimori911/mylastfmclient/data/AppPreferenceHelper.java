@@ -1,4 +1,4 @@
-package com.hikimori911.mylastfmclient.data.pojo;
+package com.hikimori911.mylastfmclient.data;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -9,21 +9,7 @@ import android.content.SharedPreferences;
 public class AppPreferenceHelper {
 
     private static final String KEY_STORAGE = "mylastfmclient";
-    private static final String AUTH_TOKEN = "AUTH_TOKEN";
     private static final String AUTH_NAME = "AUTH_NAME";
-
-    public static synchronized String getAuthToken(final Context context) {
-        SharedPreferences pref = context.getSharedPreferences(KEY_STORAGE, Context.MODE_PRIVATE);
-        return pref.getString(AUTH_TOKEN, null);
-    }
-
-    // token for authentication
-    public static void saveAuthToken(final Context context, final String token) {
-        SharedPreferences pref = context.getSharedPreferences(KEY_STORAGE, Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = pref.edit();
-        editor.putString(AUTH_TOKEN, token);
-        editor.commit();
-    }
 
     public static synchronized String getUserName(final Context context) {
         SharedPreferences pref = context.getSharedPreferences(KEY_STORAGE, Context.MODE_PRIVATE);
