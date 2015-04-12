@@ -5,8 +5,8 @@ import com.google.gson.annotations.SerializedName;
 /**
  * Created by Дмитрий on 12.04.2015.
  */
-public class LFMTrackArtist {
+public class LFMDate {
     @SerializedName("#text")
     public String text;
-    public String mbid;
+    public long utc;
 }

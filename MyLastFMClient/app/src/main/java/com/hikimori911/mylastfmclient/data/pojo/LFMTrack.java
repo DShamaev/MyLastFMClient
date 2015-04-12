@@ -7,7 +7,7 @@ public class LFMTrack {
     public LFMTrackArtist artist;
     public String name;
     public String url;
-    public String date;
+    public LFMDate date;
     public String mbid;
     public boolean streamable;
 }

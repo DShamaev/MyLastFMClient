@@ -5,8 +5,8 @@ import com.google.gson.annotations.SerializedName;
 /**
  * Created by Дмитрий on 12.04.2015.
  */
-public class LFMTrackArtist {
-    @SerializedName("#text")
-    public String text;
-    public String mbid;
+public class LFMRecentTracks {
+    public LFMTrack[] track;
+    @SerializedName("@attr")
+    public LFMAttr attr;
 }
