@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.hikimori911.mylastfmclient.R;
+import com.hikimori911.mylastfmclient.sync.LastFMSyncAdapter;
 
 
 public class DashbordActivity extends Activity
@@ -41,6 +42,8 @@ public class DashbordActivity extends Activity
         mNavigationDrawerFragment.setUp(
                 R.id.navigation_drawer,
                 (DrawerLayout) findViewById(R.id.drawer_layout));
+
+        LastFMSyncAdapter.initializeSyncAdapter(this);
     }
 
     @Override
@@ -93,11 +96,6 @@ public class DashbordActivity extends Activity
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
 
         return super.onOptionsItemSelected(item);
     }

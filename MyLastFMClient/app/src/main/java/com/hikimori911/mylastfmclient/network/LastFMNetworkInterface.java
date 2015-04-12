@@ -1,6 +1,8 @@
 package com.hikimori911.mylastfmclient.network;
 
+import com.hikimori911.mylastfmclient.data.pojo.GetRecentTracks;
 import com.hikimori911.mylastfmclient.data.pojo.GetSessionObject;
+import com.hikimori911.mylastfmclient.data.pojo.GetUserEvents;
 
 import retrofit.Callback;
 import retrofit.http.Field;
@@ -29,13 +31,13 @@ public interface LastFMNetworkInterface {
     void getUserEvents(@Query("user") String userName,
                        @Query("limit") int limit,
                        @Query("api_key") String api_key,
-                      Callback<GetSessionObject> callback);
+                      Callback<GetUserEvents> callback);
 
     @GET("/?method=user.getrecenttracks&format=json")
     void getUserRecentTracks(@Query("user") String userName,
                        @Query("limit") int limit,
                        @Query("api_key") String api_key,
-                       Callback<GetSessionObject> callback);
+                       Callback<GetRecentTracks> callback);
 
     @GET("/?method=event.getInfo&format=json")
     void getUserRecentTracks(@Query("event") int eventId,

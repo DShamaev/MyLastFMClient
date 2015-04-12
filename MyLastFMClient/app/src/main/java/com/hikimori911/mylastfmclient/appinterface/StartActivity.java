@@ -16,14 +16,15 @@ import android.widget.Toast;
 
 import com.hikimori911.mylastfmclient.R;
 import com.hikimori911.mylastfmclient.data.AppPreferenceHelper;
-import com.hikimori911.mylastfmclient.data.pojo.LFMSession;
 import com.hikimori911.mylastfmclient.data.pojo.GetSessionObject;
+import com.hikimori911.mylastfmclient.data.pojo.LFMSession;
 import com.hikimori911.mylastfmclient.network.RestClient;
 import com.hikimori911.mylastfmclient.sync.LastFMAuthenticator;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
+import de.greenrobot.event.EventBus;
 import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
@@ -53,21 +54,24 @@ public class StartActivity extends AccountAuthenticatorActivity {
         Account[] accounts = mAccountManager.getAccountsByType(LastFMAuthenticator.ACCOUNT_TYPE);
         String userName = AppPreferenceHelper.getUserName(getApplicationContext());
         if(accounts.length>0 && userName!= null){
-            AccountManagerFuture<Bundle> future = null;
             for(int i=0;i<accounts.length;i++){
                 if(accounts[i].name!=null && accounts[i].name.equals(userName)){
-                    try {
-                        future = mAccountManager.getAuthToken(accounts[i],
-                                LastFMAuthenticator.AUTHTOKEN_TYPE_FULL_ACCESS, null, this, null, null);
-                        Bundle bnd = future.getResult();
-                        final String authtoken = bnd.getString(AccountManager.KEY_AUTHTOKEN);
-                        if(authtoken!=null && !authtoken.isEmpty()) {
-                            Intent intent = new Intent(StartActivity.this, DashbordActivity.class);
-                            startActivity(intent);
-                            finish();
+                    final AccountManagerFuture<Bundle> future = mAccountManager.getAuthToken(accounts[i],
+                            LastFMAuthenticator.AUTHTOKEN_TYPE_FULL_ACCESS, null, this, null, null);
+                    dialog = ProgressDialog.show(StartActivity.this, "Loading", "Authenticate...");
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                Bundle bnd = future.getResult();
+                                final String authtoken = bnd.getString(AccountManager.KEY_AUTHTOKEN);
+                                EventBus.getDefault().post(new AuthEvent(authtoken));
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                                EventBus.getDefault().post(new AuthEvent(null));
+                            }
                         }
-                    } catch (Exception e) {
-                    }
+                    }).start();
                     break;
                 }
             }
@@ -112,17 +116,10 @@ public class StartActivity extends AccountAuthenticatorActivity {
                             public void success(GetSessionObject data, Response response) {
                                 dialog.dismiss();
                                 if(data.error==0) {
-                                    LFMSession LFMSession = (LFMSession) data.LFMSession;
+                                    LFMSession session = (LFMSession) data.session;
 
-                                    if(LFMSession !=null) {
-                                        AppPreferenceHelper.saveUserName(getApplicationContext(), LFMSession.name);
-                                        final Account account = new Account(LFMSession.name, LastFMAuthenticator.ACCOUNT_TYPE);
-                                        mAccountManager.addAccountExplicitly(account, password, null);
-                                        mAccountManager.setAuthToken(account, LastFMAuthenticator.AUTHTOKEN_TYPE_FULL_ACCESS, LFMSession.key);
-
-                                        Intent intent = new Intent(StartActivity.this, DashbordActivity.class);
-                                        startActivity(intent);
-                                        finish();
+                                    if(session !=null) {
+                                        EventBus.getDefault().post(new ExternalAuthEvent(session));
                                     }
                                 }else{
                                     Toast.makeText(getApplicationContext(),data.message,Toast.LENGTH_SHORT).show();
@@ -148,12 +145,7 @@ public class StartActivity extends AccountAuthenticatorActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
+         return super.onOptionsItemSelected(item);
     }
 
     public String md5(String s) {
@@ -173,5 +165,57 @@ public class StartActivity extends AccountAuthenticatorActivity {
             e.printStackTrace();
         }
         return "";
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    public void onStop() {
+        EventBus.getDefault().unregister(this);
+        super.onStop();
+    }
+
+    public void onEvent(ExternalAuthEvent event){
+        final String password = mPasswordET.getText().toString();
+        LFMSession session = event.session;
+        AppPreferenceHelper.saveUserName(this, session.name);
+        final Account account = new Account(session.name, LastFMAuthenticator.ACCOUNT_TYPE);
+        mAccountManager.addAccountExplicitly(account, password, null);
+        mAccountManager.setAuthToken(account, LastFMAuthenticator.AUTHTOKEN_TYPE_FULL_ACCESS, session.key);
+        showDashboard();
+    }
+
+    public void onEvent(AuthEvent event){
+        dialog.dismiss();
+        String authtoken = event.token;
+        if (authtoken != null && !authtoken.isEmpty()) {
+            showDashboard();
+        }
+    }
+
+    public void showDashboard(){
+        Intent intent = new Intent(StartActivity.this, DashbordActivity.class);
+        startActivity(intent);
+        finish();
+    }
+
+    public class ExternalAuthEvent {
+        public final LFMSession session;
+
+        public ExternalAuthEvent(LFMSession session) {
+            this.session = session;
+        }
+    }
+
+    public class AuthEvent {
+        public final String token;
+
+        public AuthEvent(String token) {
+            this.token = token;
+        }
     }
 }
