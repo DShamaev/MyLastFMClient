@@ -6,5 +6,5 @@ package com.hikimori911.mylastfmclient.data.pojo;
 public class LFMSession {
     public String name;
     public String key;
-    public boolean subscriber;
+    public int subscriber;
 }

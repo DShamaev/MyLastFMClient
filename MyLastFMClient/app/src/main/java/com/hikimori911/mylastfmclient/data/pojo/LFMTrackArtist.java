@@ -1,12 +1,12 @@
 package com.hikimori911.mylastfmclient.data.pojo;
 
-import com.google.gson.annotations.SerializedName;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * Created by Дмитрий on 12.04.2015.
  */
 public class LFMTrackArtist {
-    @SerializedName("#text")
+    @JsonProperty("#text")
     public String text;
     public String mbid;
 }

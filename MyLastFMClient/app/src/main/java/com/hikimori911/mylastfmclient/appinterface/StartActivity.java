@@ -107,9 +107,8 @@ public class StartActivity extends AccountAuthenticatorActivity {
                         new Callback<GetSessionObject>() {
                             @Override
                             public void failure(final RetrofitError error) {
-                                android.util.Log.i("example", "Error, body: " + error.getBody().toString());
                                 dialog.dismiss();
-                                Toast.makeText(getApplicationContext(),error.getBody().toString(),Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getApplicationContext(),error.toString(),Toast.LENGTH_SHORT).show();
                             }
 
                             @Override
