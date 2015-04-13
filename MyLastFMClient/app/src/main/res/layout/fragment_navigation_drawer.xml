@@ -1,7 +1,12 @@
-<ListView xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v7.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
-    android:layout_height="match_parent" android:choiceMode="singleChoice"
-    android:divider="@android:color/transparent" android:dividerHeight="0dp"
+    android:layout_height="match_parent"
+    android:id="@+id/right_drawer"
+    android:scrollbars="vertical"
+    android:choiceMode="singleChoice"
     android:background="@color/lfm_red"
+    android:divider="@android:color/transparent"
+    android:dividerHeight="0dp"
     tools:context="com.hikimori911.mylastfmclient.appinterface.MainMenuFragment"
-    />
+        >
+</android.support.v7.widget.RecyclerView>

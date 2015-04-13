@@ -17,7 +17,10 @@ import android.widget.Toast;
 import com.hikimori911.mylastfmclient.R;
 import com.hikimori911.mylastfmclient.data.AppPreferenceHelper;
 import com.hikimori911.mylastfmclient.data.pojo.GetSessionObject;
+import com.hikimori911.mylastfmclient.data.pojo.GetUserInfoObject;
+import com.hikimori911.mylastfmclient.data.pojo.LFMImage;
 import com.hikimori911.mylastfmclient.data.pojo.LFMSession;
+import com.hikimori911.mylastfmclient.data.pojo.LFMUser;
 import com.hikimori911.mylastfmclient.network.RestClient;
 import com.hikimori911.mylastfmclient.sync.LastFMAuthenticator;
 
@@ -108,15 +111,13 @@ public class StartActivity extends AccountAuthenticatorActivity {
                             @Override
                             public void failure(final RetrofitError error) {
                                 dialog.dismiss();
-                                Toast.makeText(getApplicationContext(),error.toString(),Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getApplicationContext(),error.getLocalizedMessage(),Toast.LENGTH_SHORT).show();
                             }
 
                             @Override
                             public void success(GetSessionObject data, Response response) {
-                                dialog.dismiss();
                                 if(data.error==0) {
                                     LFMSession session = (LFMSession) data.session;
-
                                     if(session !=null) {
                                         EventBus.getDefault().post(new ExternalAuthEvent(session));
                                     }
@@ -189,14 +190,53 @@ public class StartActivity extends AccountAuthenticatorActivity {
     }
 
     public void onEvent(AuthEvent event){
-        dialog.dismiss();
         String authtoken = event.token;
         if (authtoken != null && !authtoken.isEmpty()) {
             showDashboard();
         }
     }
 
+    public void onEvent(UserInfoEvent event){
+        dialog.dismiss();
+        launchDashboard();
+    }
+
     public void showDashboard(){
+        if(AppPreferenceHelper.getUserAvatarURL(getApplicationContext())==null) {
+            RestClient.get().getUserInfo(AppPreferenceHelper.getUserName(getApplicationContext()),
+                    getResources().getString(R.string.lastfm_api_key),
+                    new Callback<GetUserInfoObject>() {
+                        @Override
+                        public void failure(final RetrofitError error) {
+                            dialog.dismiss();
+                            Toast.makeText(getApplicationContext(), error.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+                        }
+
+                        @Override
+                        public void success(GetUserInfoObject data, Response response) {
+                            if (data.error == 0) {
+                                LFMUser user = (LFMUser) data.user;
+
+                                if (user != null) {
+                                    LFMImage image = user.image[0];
+                                    if(image!=null) {
+                                        AppPreferenceHelper.saveUserAvatarURL(getApplicationContext(), image.text);
+                                    }
+                                    EventBus.getDefault().post(new UserInfoEvent());
+                                }
+                            } else {
+                                Toast.makeText(getApplicationContext(), data.message, Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    }
+            );
+        }else {
+            launchDashboard();
+        }
+    }
+
+    public void launchDashboard(){
+        dialog.dismiss();
         Intent intent = new Intent(StartActivity.this, DashbordActivity.class);
         startActivity(intent);
         finish();
@@ -204,7 +244,6 @@ public class StartActivity extends AccountAuthenticatorActivity {
 
     public class ExternalAuthEvent {
         public final LFMSession session;
-
         public ExternalAuthEvent(LFMSession session) {
             this.session = session;
         }
@@ -212,9 +251,13 @@ public class StartActivity extends AccountAuthenticatorActivity {
 
     public class AuthEvent {
         public final String token;
-
         public AuthEvent(String token) {
             this.token = token;
+        }
+    }
+
+    public class UserInfoEvent {
+        public UserInfoEvent() {
         }
     }
 }

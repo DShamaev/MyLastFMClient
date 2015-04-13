@@ -56,17 +56,8 @@ public class DashbordActivity extends Activity
     }
 
     public void onSectionAttached(int number) {
-        switch (number) {
-            case 1:
-                mTitle = getString(R.string.title_section1);
-                break;
-            case 2:
-                mTitle = getString(R.string.title_section2);
-                break;
-            case 3:
-                mTitle = getString(R.string.title_section3);
-                break;
-        }
+        String[] titles = getResources().getStringArray(R.array.menu_titles);
+        mTitle = titles[number];
     }
 
     public void restoreActionBar() {
@@ -75,7 +66,6 @@ public class DashbordActivity extends Activity
         actionBar.setDisplayShowTitleEnabled(true);
         actionBar.setTitle(mTitle);
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

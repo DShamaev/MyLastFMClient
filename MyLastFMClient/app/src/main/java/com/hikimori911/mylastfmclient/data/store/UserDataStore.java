@@ -41,10 +41,13 @@ public interface UserDataStore {
         String TABLE_NAME = "events";
 
         @Column(type = Type.INTEGER)
-        String EVENT_ID = "eventId";
+        String EVENT_ID = "id";
 
         @Column(type = Type.TEXT)
-        String EVENT_TITLE = "eventTitle";
+        String EVENT_TITLE = "title";
+
+        @Column(type = Type.TEXT)
+        String EVENT_START_DATE = "startDate";
 
         @Column(type = Type.TEXT)
         String EVENT_DESCRIPTION = "eventDescription";
@@ -53,17 +56,35 @@ public interface UserDataStore {
         String EVENT_ARTISTS = "eventArtists";
 
         @Column(type = Type.INTEGER)
-        String EVENT_LOCATION = "eventLocation";
+        String EVENT_LOCATION = "venueId";
 
         @Column(type = Type.INTEGER)
-        String EVENT_ATTENDANCE = "eventAttendance";
+        String EVENT_ATTENDANCE = "attendance";
 
         @Column(type = Type.TEXT)
-        String EVENT_IMG_URL = "eventImageUrl";
+        String EVENT_IMG_URL = "imageUrl";
+
+        @Column(type = Type.INTEGER)
+        String EVENT_CANCELLED = "cancelled";
 
         //notify our view about changes in the table
         @URI(altNotify = EventsView.CONTENT_URI)
         String CONTENT_URI = "events";
+    }
+
+    @Table(VenueTable.TABLE_NAME)
+    public static interface VenueTable extends BaseTable {
+
+        String TABLE_NAME = "venues";
+
+        @Column(type = Type.INTEGER)
+        String VENUE_ID = "id";
+
+        @Column(type = Type.TEXT)
+        String VENUE_NAME = "name";
+
+        @Column(type = Type.TEXT)
+        String VENUE_URL = "locationId";
     }
 
     @Table(LocationTable.TABLE_NAME)
@@ -72,13 +93,13 @@ public interface UserDataStore {
         String TABLE_NAME = "locations";
 
         @Column(type = Type.INTEGER)
-        String LOCATION_ID = "locationId";
+        String LOCATION_CITY = "city";
 
         @Column(type = Type.TEXT)
-        String LOCATION_NAME = "locationName";
+        String LOCATION_COUNTRY = "country";
 
         @Column(type = Type.TEXT)
-        String LOCATION_URL = "locationUrl";
+        String LOCATION_STREET = "street";
     }
 
     @Table(TrackTable.TABLE_NAME)
@@ -87,36 +108,47 @@ public interface UserDataStore {
         String TABLE_NAME = "tracks";
 
         @Column(type = Type.TEXT)
-        String TRACK_NAME = "trackName";
+        String TRACK_NAME = "name";
 
         @Column(type = Type.TEXT)
         String TRACK_ARTIST = "trackArtist";
 
         @Column(type = Type.TEXT)
-        String TRACK_URL = "trackUrl";
+        String TRACK_URL = "url";
 
         @Column(type = Type.INTEGER)
-        String TRACK_DATE = "trackDate";
+        String TRACK_DATE = "date";
 
         @Column(type = Type.INTEGER)
         String TRACK_NOW_PLAYING = "nowPlaying";
+
+        //notify our view about changes in the table
+        @URI(altNotify = EventsView.CONTENT_URI)
+        String CONTENT_URI = "events";
     }
 
-    /**
-     * we want to calculate comments in post. we will use group by PostTable.ID
-     */
     @SimpleView(EventsView.VIEW_NAME)
     public static interface EventsView {
 
-        //VIEW_NAME - required field!!!
         String VIEW_NAME = "event_view";
 
-        //no need to insert/delete/edit into view, only query :)
         @URI(onlyQuery = true)
         String CONTENT_URI = "event_view";
 
         @From(EventsTable.TABLE_NAME)
-        String TABLE_POST = "post_table";
+        String TABLE_EVENT = "event_table";
+    }
+
+    @SimpleView(TrackView.VIEW_NAME)
+    public static interface TrackView {
+
+        String VIEW_NAME = "track_view";
+
+        @URI(onlyQuery = true)
+        String CONTENT_URI = "track_view";
+
+        @From(TrackTable.TABLE_NAME)
+        String TABLE_TRACK = "track_table";
     }
 
 }
